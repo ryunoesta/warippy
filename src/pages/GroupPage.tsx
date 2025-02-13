@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { PlusCircle, Receipt, Users } from "lucide-react";
+import { PlusCircle, Receipt, Users, Copy } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { useGroupStore } from "../store/groupStore";
 
@@ -291,7 +291,27 @@ export default function GroupPage() {
 
           {/* Settlements */}
           <div>
-            <h2 className="text-lg font-medium text-gray-900 mb-4">精算方法</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-medium text-gray-900">精算方法</h2>
+              {settlements.length > 0 && (
+                <button
+                  onClick={() => {
+                    const settlementText = settlements
+                      .map(
+                        (s) =>
+                          `${s.from} → ${s.to}: ¥${s.amount.toLocaleString()}`
+                      )
+                      .join("\n");
+                    navigator.clipboard.writeText(settlementText);
+                    // オプション: コピー成功を通知するトースト表示などを追加できます
+                  }}
+                  className="inline-flex items-center px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200"
+                >
+                  <Copy className="h-4 w-4 mr-1" />
+                  コピー
+                </button>
+              )}
+            </div>
             <div className="bg-white shadow overflow-hidden sm:rounded-md">
               {settlements.length === 0 ? (
                 <div className="p-4 text-center text-gray-500">

@@ -1,25 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Copy, ArrowRight } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { useGroupStore } from '../store/groupStore';
-import logoImage from '/images/logo_warippy.png';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Copy, ArrowRight } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
+import { supabase } from "../lib/supabase";
+import { useGroupStore } from "../store/groupStore";
+import logoImage from "/images/logo_warippy.png";
 
 export default function ShareGroup() {
   const { groupId } = useParams();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const setGroupName = useGroupStore((state) => state.setGroupName);
 
   useEffect(() => {
     const fetchGroup = async () => {
       try {
         const { data, error } = await supabase
-          .from('groups')
-          .select('name')
-          .eq('id', groupId)
+          .from("groups")
+          .select("name")
+          .eq("id", groupId)
           .single();
 
         if (error) throw error;
@@ -27,7 +28,7 @@ export default function ShareGroup() {
           setGroupName(data.name);
         }
       } catch (err) {
-        setError('グループの取得に失敗しました');
+        setError("グループの取得に失敗しました");
         console.error(err);
       } finally {
         setLoading(false);
@@ -45,7 +46,7 @@ export default function ShareGroup() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('URLのコピーに失敗しました:', err);
+      console.error("URLのコピーに失敗しました:", err);
     }
   };
 
@@ -74,10 +75,10 @@ export default function ShareGroup() {
         <h2 className="text-center text-3xl font-extrabold text-gray-900 -mt-10 mb-8">
           グループを共有
         </h2>
-        
+
         <div className="space-y-6">
           <p className="text-sm text-gray-600 text-center">
-            以下のURLをメンバーに共有して、グループに参加してもらいましょう。
+            以下のURLまたはQRコードをメンバーに共有して、グループに参加してもらいましょう。
           </p>
 
           <div className="mt-4">
@@ -96,8 +97,19 @@ export default function ShareGroup() {
               </button>
             </div>
             {copied && (
-              <p className="mt-2 text-sm text-green-600">URLをコピーしました！</p>
+              <p className="mt-2 text-sm text-green-600">
+                URLをコピーしました！
+              </p>
             )}
+          </div>
+
+          <div className="flex justify-center mt-6">
+            <QRCodeSVG
+              value={shareUrl}
+              size={200}
+              level="H"
+              includeMargin={true}
+            />
           </div>
 
           <button
